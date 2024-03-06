@@ -16,6 +16,10 @@ export class UserRepository extends Repository<User> {
     );
   }
 
+  async findOneByEmail(email: string): Promise<User> {
+    return this.findOneBy({ email });
+  }
+
   async createUser(signupUser: User): Promise<User> {
     return this.save(signupUser);
   }
