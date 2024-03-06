@@ -11,7 +11,7 @@ export class AuthController {
   async signupUser(
     @Body() createUserDto: CreateUserReqDto,
   ): Promise<ResponseDto<unknown>> {
-    this.userService.createUser(createUserDto);
+    await this.userService.createUser(createUserDto);
     const result = new ResponseDto(201);
     return result;
   }
