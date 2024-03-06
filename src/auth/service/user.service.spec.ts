@@ -55,5 +55,19 @@ describe('UserService', () => {
       expect(findOneByEmailSpy).toHaveBeenCalledTimes(1);
       expect(findOneByEmailSpy).toHaveBeenCalledWith(reqDto.email);
     });
+
+    it('이메일 중복으로 인한 회원가입 실패', async () => {
+      const reqDto = {
+        email: 'duplicate@example.com',
+        rawPassword: 'password123',
+        phone: '123-4567-8901',
+      };
+
+      jest
+        .spyOn(userRepository, 'findOneByEmail')
+        .mockResolvedValueOnce(new User());
+
+      await expect(service.createUser(reqDto)).rejects.toThrowError();
+    });
   });
 });
