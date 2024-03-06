@@ -1,7 +1,9 @@
 import { EntityManager, Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UserRepository extends Repository<User> {
   constructor(
     @InjectRepository(User)
@@ -16,7 +18,7 @@ export class UserRepository extends Repository<User> {
     );
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string): Promise<User | null> {
     return this.findOneBy({ email });
   }
 
