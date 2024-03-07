@@ -5,10 +5,15 @@ import * as argon2 from 'argon2';
 import { TokenPayload } from 'src/type';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../entity/user.entity';
+import * as config from 'config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async login(reqDto: LoginReqDto) {
     const { email, rawPassword } = reqDto;
@@ -18,6 +23,11 @@ export class AuthService {
     const payload: TokenPayload = await this.createTokenPayload(
       verifiedUser.id,
     );
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.createAccessToken(payload),
+      this.createRefreshToken(payload),
+    ]);
   }
 
   private async validateUser(
@@ -50,5 +60,21 @@ export class AuthService {
       iat: Math.floor(Date.now() / 1000),
       jtt: uuidv4(),
     };
+  }
+
+  private async createAccessToken(tokenPayload: TokenPayload): Promise<string> {
+    const jwtConfig = config.get('jwt');
+    const expiresIn = jwtConfig.get('access-expire');
+    const accessToken = this.jwtService.sign(tokenPayload, { expiresIn });
+    return accessToken;
+  }
+
+  private async createRefreshToken(
+    tokenPayload: TokenPayload,
+  ): Promise<string> {
+    const jwtConfig = config.get('jwt');
+    const expiresIn = jwtConfig.get('refresh-expire');
+    const refreshToken = this.jwtService.sign(tokenPayload, { expiresIn });
+    return refreshToken;
   }
 }
