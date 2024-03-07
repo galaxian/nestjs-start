@@ -70,8 +70,8 @@ export class AuthService {
 
   private async createAccessToken(tokenPayload: TokenPayload): Promise<string> {
     const jwtConfig = config.get('jwt');
-    const expiresIn = jwtConfig.get('access-expire');
-    const secret = jwtConfig.get('access-secret');
+    const expiresIn = jwtConfig.accessExpire;
+    const secret = jwtConfig.accessSecret;
     const accessToken = this.jwtService.sign(tokenPayload, {
       expiresIn,
       secret,
@@ -83,8 +83,8 @@ export class AuthService {
     tokenPayload: TokenPayload,
   ): Promise<string> {
     const jwtConfig = config.get('jwt');
-    const expiresIn = jwtConfig.get('refresh-expire');
-    const secret = jwtConfig.get('refresh-secret');
+    const expiresIn = jwtConfig.refreshExpire;
+    const secret = jwtConfig.refreshSecret;
     const refreshToken = this.jwtService.sign(tokenPayload, {
       expiresIn,
       secret,
