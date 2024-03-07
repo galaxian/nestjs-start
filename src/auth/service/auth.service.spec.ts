@@ -95,5 +95,21 @@ describe('authService', () => {
       expect(mockConfig).toHaveBeenCalledTimes(2);
       expect(mockSign).toHaveBeenCalledTimes(2);
     });
+
+    it('email로 db 조회 실패 시 로그인 실패', async () => {
+      //given
+      const loginReqDto: LoginReqDto = {
+        email: 'invalid Mail',
+        rawPassword: 'password123',
+      };
+
+      const findOneByEmailSpy = jest
+        .spyOn(userRepository, 'findOneByEmail')
+        .mockResolvedValueOnce(null);
+
+      //when
+      //then
+      await expect(authService.login(loginReqDto)).rejects.toThrowError();
+    });
   });
 });
