@@ -56,7 +56,10 @@ export class AuthService {
     rawPassword: string,
     encryptedPassword: string,
   ): Promise<boolean> {
-    return await argon2.verify(rawPassword, encryptedPassword);
+    if (!rawPassword || !encryptedPassword) {
+      return false;
+    }
+    return await argon2.verify(encryptedPassword, rawPassword);
   }
 
   private async createTokenPayload(id: string): Promise<TokenPayload> {
