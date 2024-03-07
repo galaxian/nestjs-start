@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '../entity/user.entity';
 import * as config from 'config';
 import { JwtService } from '@nestjs/jwt';
+import { LoginResDto } from '../dto/login.res';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(reqDto: LoginReqDto) {
+  async login(reqDto: LoginReqDto): Promise<LoginResDto> {
     const { email, rawPassword } = reqDto;
 
     const verifiedUser = await this.validateUser(email, rawPassword);
@@ -28,6 +29,11 @@ export class AuthService {
       this.createAccessToken(payload),
       this.createRefreshToken(payload),
     ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   private async validateUser(
