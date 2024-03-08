@@ -5,7 +5,6 @@ import * as argon2 from 'argon2';
 import { TokenPayload } from 'src/type';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../entity/user.entity';
-import * as config from 'config';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResDto } from '../dto/login.res';
 
@@ -72,9 +71,8 @@ export class AuthService {
   }
 
   private async createAccessToken(tokenPayload: TokenPayload): Promise<string> {
-    const jwtConfig = config.get('jwt');
-    const expiresIn = jwtConfig.accessExpire;
-    const secret = jwtConfig.accessSecret;
+    const expiresIn = process.env.ACCESSEXPIRE;
+    const secret = process.env.ACCESSSECRET;
     const accessToken = this.jwtService.sign(tokenPayload, {
       expiresIn,
       secret,
@@ -85,9 +83,8 @@ export class AuthService {
   private async createRefreshToken(
     tokenPayload: TokenPayload,
   ): Promise<string> {
-    const jwtConfig = config.get('jwt');
-    const expiresIn = jwtConfig.refreshExpire;
-    const secret = jwtConfig.refreshSecret;
+    const expiresIn = process.env.REFRESHEXPIRE;
+    const secret = process.env.REFRESHSECRET;
     const refreshToken = this.jwtService.sign(tokenPayload, {
       expiresIn,
       secret,
