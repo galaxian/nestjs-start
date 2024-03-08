@@ -23,4 +23,4 @@ jobs:
         run: docker build -t galaxian123/nestjs-app:latest .
 
       - name: Push the Docker image to Docker Hub
-        run: docker push galaxian/nestjs-app:latest
+        run: docker push galaxian123/nestjs-app:latest
