@@ -14,8 +14,8 @@ const jwtConfig = config.get('jwt');
   imports: [
     JwtModule.registerAsync({
       useFactory: () => ({
-        secret: jwtConfig.get('access-secret'),
-        signOptions: { expiresIn: jwtConfig.get('access-secret') },
+        secret: process.env.ACCESSSECRET,
+        signOptions: { expiresIn: process.env.ACCESSEXPIRE },
       }),
     }),
     TypeOrmModule.forFeature([User]),

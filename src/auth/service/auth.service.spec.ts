@@ -65,17 +65,6 @@ describe('authService', () => {
         .spyOn(userRepository, 'findOneByEmail')
         .mockResolvedValueOnce(findUser);
 
-      const mockConfigValue = {
-        accessSecret: 'mockAccessSecret',
-        accessExpire: 1000,
-        refreshSecret: 'mockRefreshSecret',
-        refreshexpire: 3000,
-      };
-
-      const mockConfig = jest
-        .spyOn(config, 'get')
-        .mockReturnValue(JSON.stringify(mockConfigValue));
-
       const mockSign = jest
         .spyOn(jwtService, 'sign')
         .mockReturnValueOnce('access-token')
@@ -92,7 +81,6 @@ describe('authService', () => {
       expect(result.accessToken).toEqual('access-token');
       expect(result.refreshToken).toEqual('refresh-token');
 
-      expect(mockConfig).toHaveBeenCalledTimes(2);
       expect(mockSign).toHaveBeenCalledTimes(2);
     });
 
