@@ -20,7 +20,23 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build the Docker image
-        run: docker build -t galaxian123/nestjs-app:latest .
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest .
 
       - name: Push the Docker image to Docker Hub
-        run: docker push galaxian123/nestjs-app:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+
+      - name: Application run
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.CLOUD_HOST }}
+          username: ${{ secrets.CLOUD_USERNAME }}
+          password: ${{ secrets.CLOUD_PASSWORD }}
+
+          script: |
+            sudo docker kill ${{ secrets.PROJECT_NAME }} || true
+            sudo docker rm -f ${{ secrets.PROJECT_NAME }} || true
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }} || true
+
+            sudo docker run -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} \
+            --name ${{ secrets.PROJECT_NAME }} \
+            -d ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
