@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
@@ -28,9 +29,6 @@
     "@nestjs/typeorm": "^10.0.2",
     "@types/uuid": "^9.0.8",
     "argon2": "^0.40.1",
-    "config": "^3.3.11",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.4.5",
     "mysql2": "^3.9.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
