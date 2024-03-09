@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { addTransactionalDataSource } from 'typeorm-transactional';
+import { DataSource } from 'typeorm';
 import { validationSchema } from './config/validation.schema';
 
 @Module({
@@ -25,6 +27,12 @@ import { validationSchema } from './config/validation.schema';
         synchronize: Boolean(configService.get<boolean>('DB_SYNCHRONIZE')),
         autoLoadEntities: true,
       }),
+      dataSourceFactory: async (options) => {
+        if (!options) {
+          throw new Error('Invalid options passed');
+        }
+        return addTransactionalDataSource(new DataSource(options));
+      },
     }),
     AuthModule,
   ],

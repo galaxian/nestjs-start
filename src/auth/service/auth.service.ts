@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '../entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResDto } from '../dto/login.res';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  @Transactional()
   async login(reqDto: LoginReqDto): Promise<LoginResDto> {
     const { email, rawPassword } = reqDto;
 
