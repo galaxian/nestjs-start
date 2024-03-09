@@ -6,7 +6,6 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginReqDto } from '../dto/login.req';
 import { User } from '../entity/user.entity';
 import { LoginResDto } from '../dto/login.res';
-import * as config from 'config';
 import * as argon2 from 'argon2';
 
 class MockUserRepository {

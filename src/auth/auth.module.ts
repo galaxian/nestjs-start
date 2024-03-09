@@ -6,16 +6,17 @@ import { UserService } from './service/user.service';
 import { UserRepository } from './repository/user.repository';
 import { User } from './entity/user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import * as config from 'config';
-
-const jwtConfig = config.get('jwt');
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     JwtModule.registerAsync({
-      useFactory: () => ({
-        secret: process.env.ACCESSSECRET,
-        signOptions: { expiresIn: process.env.ACCESSEXPIRE },
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('ACCESSSECRET'),
+        signOptions: { expiresIn: configService.get<string>('ACCESSEXPIRE') },
       }),
     }),
     TypeOrmModule.forFeature([User]),

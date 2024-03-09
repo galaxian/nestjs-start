@@ -3,11 +3,13 @@ import { UserRepository } from '../repository/user.repository';
 import * as argon2 from 'argon2';
 import { User } from '../entity/user.entity';
 import { CreateUserReqDto } from '../dto/create-user.req';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
+  @Transactional()
   async createUser(reqDto: CreateUserReqDto): Promise<void> {
     const findUser = await this.userRepository.findOneByEmail(reqDto.email);
     if (findUser) {

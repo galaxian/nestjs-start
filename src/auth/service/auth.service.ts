@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '../entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResDto } from '../dto/login.res';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  @Transactional()
   async login(reqDto: LoginReqDto): Promise<LoginResDto> {
     const { email, rawPassword } = reqDto;
 
@@ -44,7 +46,7 @@ export class AuthService {
       throw new BadRequestException('사용자를 찾을 수 없습니다.');
     }
 
-    if (!this.isVerifyPassword(rawPassword, user.encrypedPassword)) {
+    if (!(await this.isVerifyPassword(rawPassword, user.encrypedPassword))) {
       throw new BadRequestException('비밀번호가 일치하지 않습니다.');
     }
 
