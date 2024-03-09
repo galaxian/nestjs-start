@@ -46,7 +46,7 @@ export class AuthService {
       throw new BadRequestException('사용자를 찾을 수 없습니다.');
     }
 
-    if (!this.isVerifyPassword(rawPassword, user.encrypedPassword)) {
+    if (!(await this.isVerifyPassword(rawPassword, user.encrypedPassword))) {
       throw new BadRequestException('비밀번호가 일치하지 않습니다.');
     }
 
