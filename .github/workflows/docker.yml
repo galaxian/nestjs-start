@@ -20,7 +20,20 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build the Docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest .
+        run: |
+          docker build \
+            --build-arg SERVER_PORT=${{ secrets.APP_PORT }}T \
+            --build-arg DB_HOST=${{ secrets.DB_HOST }} \
+            --build-arg DB_PORT=${{ secrets.DB_PORT }} \
+            --build-arg DB_DATABASE=${{ secrets.DB_DATABASE }} \
+            --build-arg DB_USERNAME=${{ secrets.DB_USERNAME }} \
+            --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            --build-arg DB_SYNCHRONIZE=${{ secrets.DB_SYNCHRONIZE }} \
+            --build-arg ACCESSEXPIRE=${{ secrets.ACCESSEXPIRE }} \
+            --build-arg ACCESSSECRET=${{ secrets.ACCESSSECRET }} \
+            --build-arg REFRESHEXPIRE=${{ secrets.REFRESHEXPIRE }} \
+            --build-arg REFRESHSECRET=${{ secrets.REFRESHSECRET }} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest .
 
       - name: Push the Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
@@ -37,6 +50,18 @@ jobs:
             sudo docker rm -f ${{ secrets.PROJECT_NAME }} || true
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }} || true
 
-            sudo docker run -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} \
-            --name ${{ secrets.PROJECT_NAME }} \
-            -d ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
+            sudo docker run \
+              -e SERVER_PORT=${{ secrets.APP_PORT }} \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_PORT=${{ secrets.DB_PORT }} \
+              -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e DB_SYNCHRONIZE=${{ secrets.DB_SYNCHRONIZE }} \
+              -e ACCESSEXPIRE=${{ secrets.ACCESSEXPIRE }} \
+              -e ACCESSSECRET=${{ secrets.ACCESSSECRET }} \
+              -e REFRESHEXPIRE=${{ secrets.REFRESHEXPIRE }} \
+              -e REFRESHSECRET=${{ secrets.REFRESHSECRET }} \
+              -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} \
+              --name ${{ secrets.PROJECT_NAME }} \
+              -d ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
