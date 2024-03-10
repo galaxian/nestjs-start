@@ -8,6 +8,8 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+RUN yarn build
+
 EXPOSE 3000
 
 ENTRYPOINT ["yarn", "start:prod"]
