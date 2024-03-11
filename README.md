@@ -1,73 +1,82 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 온라인 쇼핑 서비스
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+이 프로젝트는 온라인 쇼핑 시스템을 구축하는 것을 목표로 합니다. 이 시스템은 회원 관리, 상품 관리, 주문 처리, 쿠폰 관리, 포인트 시스템 등을 포함합니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 요구사항
 
-## Description
+### 상품
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. 상품을 등록 할 수 있다.
+   - admin 권한을 가진 사용자만 사용할 수 있다.
+   - 상품 생성 정보
+     - 상품 생성에는 상품명, 가격, 재고가 반드시 필요하다
+       - 상품명은 동일한 상품명이 있을 수도 있다.
+     - 상품 생성에는 카테고리명, 이미지, 상세 정보가 있을 수 있다.
+   - 상품 가격은 0원보다 커야 한다.
+   - 상품 등록 시에는 재고가 1이상으로 등록해야 한다.
+   - 상품은 각 상품의 상태를 나타내는 값이 존재한다.
+     - 판매 가능, 매진
+     - 상품 상태의 기본값은 판매 가능이며 상품 등록 과정을 통해 상태 값은 판매 가능으로 설정되어야 한다.
+2. 모든 상품 정보를 조회할 수 있다.
+   - 모든 사용자가 사용할 수 있다.
+3. 상품 정보를 수정할 수 있다.
+   - admin 권한을 가진 사용자만 사용할 수 있다.
+   - 상품명, 가격, 재고, 카테고리명, 이미지, 상세 정보를 수정 가능하다.
+4. 상품 정보를 삭제할 수 있다.
+   - admin 권한을 가진 사용자만 사용할 수 있다.
+5. 상품 상태는 변경 될 수 있다.
+   - 재고가 없는 경우 자동으로 매진 상태로 변경된다.
+   - 재고가 생긴 경우 자동으로 판매 가능 상태로 변경된다.
 
-## Installation
+### 주문
 
-```bash
-$ yarn install
-```
+1. 주문을 등록 할 수 있다.
+   - 인증된 사용자만 사용할 수 있다.
+   - 주문 생성 요청 정보
+     - 주문한 사용자의 식별자, 주문 상품 목록이 반드시 필요하다.
+       - 주문 상품 목록은 상품 식별자와 상품 수량으로 구성된다.
+         - 상품 식별자는 등록되어 있는 상품 식별자여야 한다.
+     - 쿠폰 번호, 포인트 사용량, 배달지 주소가 있을 수도 있다.
+   - 주문할 경우 운송정보를 등록해야 한다.
+     - 운송정보는 배달 주소, 운송장 번호, 운송 회사로 구성된다.
+     - 운송의 상태를 나태내는 값이 존재한다.
+       - 주문완료, 출고 준비 중, 출고 완료, 배송 중, 배송 완료
+   - 주문에는 각 주문의 상태를 나타내는 값이 존재한다.
+     - 주문 시작, 결제 완료, 환불
+     - 주문 상태의 기본값은 주문 시작이며 상품 등록 과정을 통해 상태 값은 주문 시작로 설정되어야 한다.
+2. 주문정보를 조회할 수 있다.
+   - 관리자 혹은 주문자만 사용할 수 있다.
+3. 주문을 취소할 수 있다.
+   - 관리자 혹은 주문자만 사용할 수 있다.
+4. 주문 상태는 변경될 수 있다.
+   - 결제가 완료된 경우 주문 상태를 결제 완료로 변경한다.
+   - 구매자가 주문 취소한 경우 주문 상태를 환불로 변경한다.
 
-## Running the app
+### 쿠폰
 
-```bash
-# development
-$ yarn run start
+1. 쿠폰의 종류를 등록할 수 있다.
+   - 관리자만 등록할 수 있다.
+   - 쿠폰 생성에는 쿠폰 타입과 할인액이 반드시 존재한다.
+   - 쿠폰에는 쿠폰의 종류를 나타내는 값이 존재한다.
+     - 정액, 정률
+2. 쿠폰을 발급할 수 있다.
+   - 쿠폰을 발급할 때에는 발급일, 만료일, 쿠폰 종류, 사용자가 반드시 필요하다.
+   - 쿠폰에는 쿠폰이 사용가능 여부를 나타내는 값이 존재한다.
+     - true, false
+   - 쿠폰에는 쿠폰의 사용 유무를 나타내는 값이 존재한다.
+     - true, false
+3. 쿠폰 사용가능 여부는 변경될 수 있다.
+   - 쿠폰 만료일이 지난 경우 쿠폰 사용가능 여부를 false로 변경한다.
+4. 쿠폰 사용 유무는 변경될 수 있다.
+   - 쿠폰을 사용한 경우 사용 유무를 true로 변경한다.
+   - 쿠폰 사용 날짜를 표시해야 한다.
+5. 쿠폰을 조회할 수 있다.
+   - 사용자 본인의 쿠폰을 조회할 수 있다.
 
-# watch mode
-$ yarn run start:dev
+### 포인트
 
-# production mode
-$ yarn run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+1. 포인트를 얻을 수 있다.
+   - 인증된 사용자만 사용할 수 있다.
+   - 결제액의 5%
+2. 주문 결제 시 포인트를 사용할 수 있다.
+   - 인증된 사용자만 사용할 수 있다.
