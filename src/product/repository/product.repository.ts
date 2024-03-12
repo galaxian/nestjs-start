@@ -17,4 +17,8 @@ export class ProductRepository extends Repository<Product> {
       productRepository.queryRunner,
     );
   }
+
+  async createProduct(product: Product) {
+    await this.save(product);
+  }
 }
