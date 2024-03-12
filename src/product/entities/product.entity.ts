@@ -1,10 +1,13 @@
 import { BaseEntity } from 'src/utils/entity/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export type ProductStatus = 'available' | 'out-of-stock';
 
 @Entity()
 export class Product extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
