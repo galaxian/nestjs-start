@@ -1,7 +1,8 @@
 import { BaseEntity } from 'src/utils/entity/base.entity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { RefundedInfo } from './refunded-info';
 import { ShippingInfo } from './shipping-info';
+import { Coupon } from './coupon.entity';
 
 export type OrderStatus = 'started' | 'paid' | 'refunded';
 
@@ -24,4 +25,7 @@ export class Order extends BaseEntity {
 
   @Column((type) => ShippingInfo)
   shippingInfo: ShippingInfo;
+
+  @OneToOne(() => Coupon, { nullable: true })
+  usedCoupon: Coupon;
 }
