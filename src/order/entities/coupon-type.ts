@@ -8,4 +8,11 @@ export class CouponTypeInfo {
 
   @Column({ type: 'int' })
   value: number;
+
+  static createCouponType(type: CouponType, value: number) {
+    const typeInfo = new CouponTypeInfo();
+    typeInfo.couponType = type;
+    typeInfo.value = value;
+    return typeInfo;
+  }
 }

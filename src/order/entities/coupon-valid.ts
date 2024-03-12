@@ -9,4 +9,11 @@ export class CouponValidInfo {
 
   @Column({ type: 'timestamp', nullable: true })
   usedAt: Date;
+
+  static createCouponValidInfo(validFrom: Date, validUntil: Date) {
+    const validInfo = new CouponValidInfo();
+    validInfo.validFrom = validFrom;
+    validInfo.validUntil = validUntil;
+    return validInfo;
+  }
 }
