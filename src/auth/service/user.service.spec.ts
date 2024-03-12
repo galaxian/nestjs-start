@@ -13,6 +13,10 @@ class MockUserRepository {
   }
 }
 
+jest.mock('typeorm-transactional', () => ({
+  Transactional: () => () => ({}),
+}));
+
 describe('UserService', () => {
   let service: UserService;
   let userRepository: UserRepository;
