@@ -5,6 +5,7 @@ import { CouponTypeInfo } from '../entities/coupon-type';
 import { CouponValidInfo } from '../entities/coupon-valid';
 import { Coupon } from '../entities/coupon.entity';
 import { CouponRepository } from '../repository/coupon.repository';
+import { DateMapper } from 'src/utils/date.mapper';
 
 @Injectable()
 export class CouponService {
@@ -16,8 +17,8 @@ export class CouponService {
 
     const couponTypeInfo = CouponTypeInfo.createCouponType(couponType, value);
     const couponValidInfo = CouponValidInfo.createCouponValidInfo(
-      validFrom,
-      validUntil,
+      DateMapper.stringToDate(validFrom),
+      DateMapper.stringToDate(validUntil),
     );
 
     const coupon = new Coupon();
