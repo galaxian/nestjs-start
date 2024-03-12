@@ -111,5 +111,16 @@ describe('ProductService', () => {
         ),
       );
     });
+    it('상품이 없는 경우 빈 리스트 반환', async () => {
+      //given
+      jest.spyOn(productRepository, 'findAllProduct').mockResolvedValueOnce([]);
+
+      //when
+      const result = await productService.findAllProduct();
+
+      //then
+      expect(result.length).toBe(0);
+      expect(result).toEqual([]);
+    });
   });
 });
