@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DataSource } from 'typeorm';
 import { validationSchema } from './config/validation.schema';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { validationSchema } from './config/validation.schema';
       },
     }),
     AuthModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

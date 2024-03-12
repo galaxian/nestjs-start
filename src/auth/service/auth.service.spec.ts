@@ -20,6 +20,10 @@ class MockJwtService {
   }
 }
 
+jest.mock('typeorm-transactional', () => ({
+  Transactional: () => () => ({}),
+}));
+
 describe('authService', () => {
   let authService: AuthService;
   let jwtService: JwtService;
