@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ProductService } from '../service/product.service';
 import { CreateProductReqDto } from '../dto/create.product.req.dto';
 import { ResponseDto } from 'src/utils/dto/response.dto';
+import { FindAllProductResDto } from '../dto/find.products.res.dto';
 
 @Controller('products')
 export class ProductController {
@@ -13,6 +14,13 @@ export class ProductController {
   ): Promise<ResponseDto<unknown>> {
     await this.productService.createProduct(createProductDto);
     const result = new ResponseDto(201);
+    return result;
+  }
+
+  @Get()
+  async findAllProduct(): Promise<ResponseDto<FindAllProductResDto[]>> {
+    const data = await this.productService.findAllProduct();
+    const result = new ResponseDto(200, null, data);
     return result;
   }
 }
