@@ -37,6 +37,7 @@ export class Order extends BaseEntity {
   @OneToOne(() => Coupon, { nullable: true })
   usedCoupon: Relation<Coupon>;
 
-  @ManyToOne(() => User)
+  // 인증 및 인가 구현 후 nullable: false
+  @ManyToOne(() => User, { nullable: true })
   user: Relation<User>;
 }
