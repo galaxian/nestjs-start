@@ -2,6 +2,7 @@ import { BaseEntity } from 'src/utils/entity/base.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -35,6 +36,7 @@ export class Order extends BaseEntity {
   shippingInfo: ShippingInfo;
 
   @OneToOne(() => Coupon, { nullable: true })
+  @JoinColumn()
   usedCoupon: Relation<Coupon>;
 
   // 인증 및 인가 구현 후 nullable: false
