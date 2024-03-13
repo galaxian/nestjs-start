@@ -12,6 +12,7 @@ import { CreateOrderResDto } from '../dto/create-order.res.dto';
 import { RefundedInfo } from '../entities/refunded-info';
 import { OrderItemReqDto } from '../dto/order-item.req.dto';
 import { User } from 'src/auth/entity/user.entity';
+import { PointRepository } from '../repository/point.repository';
 
 @Injectable()
 export class OrderService {
@@ -20,6 +21,7 @@ export class OrderService {
     private readonly orderItemRepository: OrderItemRepository,
     private readonly productRepository: ProductRepository,
     private readonly couponRepository: CouponRepository,
+    private readonly pointRepository: PointRepository,
   ) {}
 
   @Transactional()
@@ -97,7 +99,9 @@ export class OrderService {
     usedPoint: number,
     userId: string,
   ) {
-    this.applyCoupon(totalAmount, couponId, userId);
+    const couponDiscount = couponId
+      ? await this.applyCoupon(totalAmount, couponId, userId)
+      : 0;
   }
 
   private async applyCoupon(
@@ -126,6 +130,14 @@ export class OrderService {
       return couponTypeInfo.value;
     }
     return 0;
+  }
+
+  private async applyPoint(usedPoint: number, userId: string) {
+    const userPoint = await this.pointRepository.findPointByUserId(userId);
+
+    if (userPoint.isAvailable(usedPoint)) {
+      throw new BadRequestException('포인트가 부족합니다.');
+    }
   }
 
   private async calculateTotalAmout(
