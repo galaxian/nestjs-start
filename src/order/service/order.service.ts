@@ -5,6 +5,7 @@ import { CreaetOrderReqDto } from '../dto/create-order.req.dto';
 import { OrderItemRepository } from '../repository/order-item.repository';
 import { ProductRepository } from 'src/product/repository/product.repository';
 import { CouponRepository } from '../repository/coupon.repository';
+import { OrderItem } from '../entities/order-item.entity';
 import { ShippingInfo } from '../entities/shipping-info';
 import { Order } from '../entities/order.entity';
 import { CreateOrderResDto } from '../dto/create-order.res.dto';
@@ -26,6 +27,21 @@ export class OrderService {
 
     const order = await this.makeOrder(reqDto);
     const savedOrder = await this.orderRepository.createOrder(order);
+
+    const orderItemList = await this.makeOrderItem(
+      itemQuantityList,
+      savedOrder,
+    );
+
+    this.orderItemRepository.saveOrderItemList(orderItemList);
+
+    const response: CreateOrderResDto = {
+      orderNo: savedOrder.orderNo,
+      amount: savedOrder.amount,
+      orderStatus: savedOrder.status,
+    };
+
+    return response;
   }
 
   private async makeOrder(reqDto: CreaetOrderReqDto): Promise<Order> {
@@ -48,6 +64,23 @@ export class OrderService {
     order.amount = totalAmount;
 
     return order;
+  }
+
+  private async makeOrderItem(
+    itemQuantityList: OrderItemReqDto[],
+    savedOrder: Order,
+  ): Promise<OrderItem[]> {
+    const orderItemList = [];
+    for (const { productId, quantity } of itemQuantityList) {
+      const product = await this.productRepository.findProductById(productId);
+
+      const ordreItem = new OrderItem();
+      ordreItem.product = product;
+      ordreItem.quantity = quantity;
+      ordreItem.order = savedOrder;
+      orderItemList.push(ordreItem);
+    }
+    return orderItemList;
   }
 
   private async calculateTotalAmout(
