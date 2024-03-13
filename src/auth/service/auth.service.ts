@@ -93,4 +93,8 @@ export class AuthService {
     });
     return refreshToken;
   }
+
+  async tokenValidateUser(payload: TokenPayload): Promise<User | undefined> {
+    return await this.userRepository.findUserById(payload.sub);
+  }
 }
