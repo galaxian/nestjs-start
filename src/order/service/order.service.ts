@@ -11,6 +11,7 @@ import { Order } from '../entities/order.entity';
 import { CreateOrderResDto } from '../dto/create-order.res.dto';
 import { RefundedInfo } from '../entities/refunded-info';
 import { OrderItemReqDto } from '../dto/order-item.req.dto';
+import { User } from 'src/auth/entity/user.entity';
 
 @Injectable()
 export class OrderService {
@@ -22,10 +23,13 @@ export class OrderService {
   ) {}
 
   @Transactional()
-  async createOrder(reqDto: CreaetOrderReqDto): Promise<CreateOrderResDto> {
+  async createOrder(
+    reqDto: CreaetOrderReqDto,
+    certifiedUser: User,
+  ): Promise<CreateOrderResDto> {
     const itemQuantityList = reqDto.itemQuantityList;
 
-    const order = await this.makeOrder(reqDto);
+    const order = await this.makeOrder(reqDto, certifiedUser);
     const savedOrder = await this.orderRepository.createOrder(order);
 
     const orderItemList = await this.makeOrderItem(
@@ -44,7 +48,10 @@ export class OrderService {
     return response;
   }
 
-  private async makeOrder(reqDto: CreaetOrderReqDto): Promise<Order> {
+  private async makeOrder(
+    reqDto: CreaetOrderReqDto,
+    certifiedUser: User,
+  ): Promise<Order> {
     const { itemQuantityList, address, couponId } = reqDto;
     const shippingInfo = ShippingInfo.createShippingInfo(address);
     const totalAmount = await this.calculateTotalAmout(itemQuantityList);
@@ -62,6 +69,7 @@ export class OrderService {
     order.refundedInfo = new RefundedInfo();
     order.createOrderNo();
     order.amount = totalAmount;
+    order.user = certifiedUser;
 
     return order;
   }
@@ -82,6 +90,8 @@ export class OrderService {
     }
     return orderItemList;
   }
+
+  // private async applyDiscount(totalAmount: number) {}
 
   private async calculateTotalAmout(
     itemQuantityList: OrderItemReqDto[],
