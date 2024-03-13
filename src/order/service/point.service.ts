@@ -26,8 +26,10 @@ export class PointService {
       userPoint.usePoint(amount);
     }
 
+    const savedPoint = await this.pointRepository.createUserPoint(userPoint);
+
     return {
-      availablePoint: userPoint.availablePoint,
+      availablePoint: savedPoint.availablePoint,
     };
   }
 }
