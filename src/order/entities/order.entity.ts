@@ -26,6 +26,9 @@ export class Order extends BaseEntity {
   @Column({ type: 'int' })
   amount: number;
 
+  @Column({ type: 'int' })
+  usedPoint: number;
+
   @Column({ type: 'varchar', length: 100 })
   status: OrderStatus;
 
@@ -40,7 +43,7 @@ export class Order extends BaseEntity {
   usedCoupon: Relation<Coupon>;
 
   // 인증 및 인가 구현 후 nullable: false
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User)
   user: Relation<User>;
 
   createOrderNo() {

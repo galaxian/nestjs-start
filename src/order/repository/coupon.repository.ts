@@ -25,4 +25,13 @@ export class CouponRepository extends Repository<Coupon> {
   async findCouponById(id: string): Promise<Coupon> {
     return await this.findOneBy({ id });
   }
+
+  async findCouponByIdAndUserId(id: string, userId: string): Promise<Coupon> {
+    return await this.couponRepository.findOne({
+      where: {
+        id: id,
+        user: { id: userId },
+      },
+    });
+  }
 }

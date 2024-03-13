@@ -28,4 +28,11 @@ export class Point extends BaseEntity {
   usePoint(amount: number) {
     this.availablePoint -= amount;
   }
+
+  isAvailable(usedPoint: number): boolean {
+    if (this.availablePoint < 0 || this.availablePoint < usedPoint) {
+      return false;
+    }
+    return true;
+  }
 }

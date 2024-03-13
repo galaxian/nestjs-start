@@ -6,13 +6,17 @@ import { CouponValidInfo } from '../entities/coupon-valid';
 import { Coupon } from '../entities/coupon.entity';
 import { CouponRepository } from '../repository/coupon.repository';
 import { DateMapper } from 'src/utils/date.mapper';
+import { User } from 'src/auth/entity/user.entity';
 
 @Injectable()
 export class CouponService {
   constructor(private readonly couponRepository: CouponRepository) {}
 
   @Transactional()
-  async createCoupon(reqDto: CreateCouponReqDto): Promise<void> {
+  async createCoupon(
+    reqDto: CreateCouponReqDto,
+    certifiedUser: User,
+  ): Promise<void> {
     const { couponType, value, validFrom, validUntil } = reqDto;
 
     const couponTypeInfo = CouponTypeInfo.createCouponType(couponType, value);
@@ -24,6 +28,7 @@ export class CouponService {
     const coupon = new Coupon();
     coupon.couponTypeInfo = couponTypeInfo;
     coupon.couponValidInfo = couponValidInfo;
+    coupon.user = certifiedUser;
 
     await this.couponRepository.createCoupon(coupon);
   }
