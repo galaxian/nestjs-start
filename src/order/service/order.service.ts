@@ -152,6 +152,9 @@ export class OrderService {
       throw new BadRequestException('포인트가 부족합니다.');
     }
 
+    userPoint.usePoint(usedPoint);
+    await this.pointRepository.save(userPoint);
+
     return usedPoint;
   }
 
