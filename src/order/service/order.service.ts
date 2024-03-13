@@ -54,15 +54,22 @@ export class OrderService {
     reqDto: CreaetOrderReqDto,
     certifiedUser: User,
   ): Promise<Order> {
-    const { itemQuantityList, address, couponId } = reqDto;
+    const { itemQuantityList, address, couponId, usedPoint } = reqDto;
     const shippingInfo = ShippingInfo.createShippingInfo(address);
     const totalAmount = await this.calculateTotalAmout(itemQuantityList);
 
-    let coupon = null;
-    // 쿠폰 결제액 반영 기능 구현해야함
-    if (couponId) {
-      coupon = await this.couponRepository.findCouponById(couponId);
-    }
+    const couponDiscount = couponId
+      ? await this.applyCoupon(totalAmount, couponId, certifiedUser.id)
+      : 0;
+
+    const pointDiscount = usedPoint
+      ? await this.applyPoint(usedPoint, certifiedUser.id)
+      : 0;
+
+    const applyDiscountTotalAmount =
+      totalAmount - (couponDiscount + pointDiscount);
+
+    const coupon = await this.couponRepository.findCouponById(couponId);
 
     const order = new Order();
     order.status = 'started';
@@ -70,8 +77,9 @@ export class OrderService {
     order.usedCoupon = coupon;
     order.refundedInfo = new RefundedInfo();
     order.createOrderNo();
-    order.amount = totalAmount;
+    order.amount = applyDiscountTotalAmount;
     order.user = certifiedUser;
+    order.usedPoint = pointDiscount;
 
     return order;
   }
@@ -91,25 +99,6 @@ export class OrderService {
       orderItemList.push(ordreItem);
     }
     return orderItemList;
-  }
-
-  private async applyDiscount(
-    totalAmount: number,
-    couponId: string,
-    usedPoint: number,
-    userId: string,
-  ): Promise<number> {
-    const couponDiscount = couponId
-      ? await this.applyCoupon(totalAmount, couponId, userId)
-      : 0;
-
-    const pointDiscount = usedPoint
-      ? await this.applyPoint(usedPoint, userId)
-      : 0;
-
-    const applyDiscountTotalAmount =
-      totalAmount - (couponDiscount + pointDiscount);
-    return applyDiscountTotalAmount;
   }
 
   private async applyCoupon(

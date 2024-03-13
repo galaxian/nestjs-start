@@ -4,4 +4,5 @@ export class CreaetOrderReqDto {
   itemQuantityList: OrderItemReqDto[];
   address: string;
   couponId?: string;
+  usedPoint?: number;
 }

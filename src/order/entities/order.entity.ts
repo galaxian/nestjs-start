@@ -26,6 +26,9 @@ export class Order extends BaseEntity {
   @Column({ type: 'int' })
   amount: number;
 
+  @Column({ type: 'int' })
+  usedPoint: number;
+
   @Column({ type: 'varchar', length: 100 })
   status: OrderStatus;
 
