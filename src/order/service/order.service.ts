@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { OrderRepository } from '../repository/order.repository';
 import { Transactional } from 'typeorm-transactional';
 import { CreaetOrderReqDto } from '../dto/create-order.req.dto';
@@ -91,7 +91,35 @@ export class OrderService {
     return orderItemList;
   }
 
-  // private async applyDiscount(totalAmount: number) {}
+  private async applyDiscount(
+    totalAmount: number,
+    couponId: string,
+    usedPoint: number,
+    userId: string,
+  ) {
+    this.applyCoupon(totalAmount, couponId, userId);
+  }
+
+  private async applyCoupon(
+    totalAmount: number,
+    couponId: string,
+    userId: string,
+  ) {
+    const coupon = await this.couponRepository.findCouponByIdAndUserId(
+      couponId,
+      userId,
+    );
+
+    if (!coupon) {
+      throw new BadRequestException('존재하지 않는 쿠폰입니다.');
+    }
+
+    const { couponValidInfo, couponTypeInfo } = coupon;
+
+    if (!couponValidInfo.isValid()) {
+      throw new BadRequestException('사용 불가한 쿠폰입니다.');
+    }
+  }
 
   private async calculateTotalAmout(
     itemQuantityList: OrderItemReqDto[],

@@ -16,4 +16,16 @@ export class CouponValidInfo {
     validInfo.validUntil = validUntil;
     return validInfo;
   }
+
+  isValid() {
+    if (this.usedAt) {
+      return false;
+    }
+
+    if (this.validFrom < new Date() || this.validUntil > new Date()) {
+      return false;
+    }
+
+    return true;
+  }
 }
