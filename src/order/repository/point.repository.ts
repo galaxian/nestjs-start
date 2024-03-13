@@ -21,4 +21,8 @@ export class PointRepository extends Repository<Point> {
   async findPointByUserId(userId: string): Promise<Point> {
     return await this.findOne({ where: { user: { id: userId } } });
   }
+
+  async createUserPoint(point: Point): Promise<Point> {
+    return await this.save(point);
+  }
 }

@@ -4,10 +4,15 @@ import * as argon2 from 'argon2';
 import { User } from '../entity/user.entity';
 import { CreateUserReqDto } from '../dto/create-user.req';
 import { Transactional } from 'typeorm-transactional';
+import { PointRepository } from 'src/order/repository/point.repository';
+import { Point } from 'src/order/entities/point.entity';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly pointRepository: PointRepository,
+  ) {}
 
   @Transactional()
   async createUser(reqDto: CreateUserReqDto): Promise<void> {
@@ -22,6 +27,11 @@ export class UserService {
     user.encrypedPassword = hashPassword;
     user.phone = reqDto.phone;
 
-    await this.userRepository.createUser(user);
+    const savedUser = await this.userRepository.createUser(user);
+
+    const userPoint = new Point();
+    userPoint.user = savedUser;
+
+    await this.pointRepository.createUserPoint(userPoint);
   }
 }
