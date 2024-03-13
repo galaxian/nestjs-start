@@ -20,4 +20,12 @@ export class Point extends BaseEntity {
   @OneToOne(() => User)
   @JoinColumn()
   user: Relation<User>;
+
+  earnPoint(amount: number) {
+    this.availablePoint += amount;
+  }
+
+  usePoint(amount: number) {
+    this.availablePoint -= amount;
+  }
 }
