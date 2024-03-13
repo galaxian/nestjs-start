@@ -13,6 +13,7 @@ import { RefundedInfo } from '../entities/refunded-info';
 import { OrderItemReqDto } from '../dto/order-item.req.dto';
 import { User } from 'src/auth/entity/user.entity';
 import { PointRepository } from '../repository/point.repository';
+import { CouponValidInfo } from '../entities/coupon-valid';
 
 @Injectable()
 export class OrderService {
@@ -122,10 +123,25 @@ export class OrderService {
     }
 
     if (couponTypeInfo.couponType === 'fixed') {
+      const usedCouponValidInfo = new CouponValidInfo();
+      usedCouponValidInfo.validFrom = couponValidInfo.validFrom;
+      usedCouponValidInfo.validUntil = couponValidInfo.validUntil;
+      usedCouponValidInfo.usedAt = new Date();
+      coupon.couponValidInfo = usedCouponValidInfo;
+
+      await this.couponRepository.save(coupon);
       return (totalAmount * couponTypeInfo.value) / 100;
     } else if (couponTypeInfo.couponType === 'flat') {
+      const usedCouponValidInfo = new CouponValidInfo();
+      usedCouponValidInfo.validFrom = couponValidInfo.validFrom;
+      usedCouponValidInfo.validUntil = couponValidInfo.validUntil;
+      usedCouponValidInfo.usedAt = new Date();
+      coupon.couponValidInfo = usedCouponValidInfo;
+
+      await this.couponRepository.save(coupon);
       return couponTypeInfo.value;
     }
+
     return 0;
   }
 
