@@ -5,7 +5,10 @@ import { CreaetOrderReqDto } from '../dto/create-order.req.dto';
 import { OrderItemRepository } from '../repository/order-item.repository';
 import { ProductRepository } from 'src/product/repository/product.repository';
 import { CouponRepository } from '../repository/coupon.repository';
+import { ShippingInfo } from '../entities/shipping-info';
+import { Order } from '../entities/order.entity';
 import { CreateOrderResDto } from '../dto/create-order.res.dto';
+import { RefundedInfo } from '../entities/refunded-info';
 import { OrderItemReqDto } from '../dto/order-item.req.dto';
 
 @Injectable()
@@ -18,7 +21,34 @@ export class OrderService {
   ) {}
 
   @Transactional()
-  async createOrder(reqDto: CreaetOrderReqDto): Promise<CreateOrderResDto> {}
+  async createOrder(reqDto: CreaetOrderReqDto): Promise<CreateOrderResDto> {
+    const itemQuantityList = reqDto.itemQuantityList;
+
+    const order = await this.makeOrder(reqDto);
+    const savedOrder = await this.orderRepository.createOrder(order);
+  }
+
+  private async makeOrder(reqDto: CreaetOrderReqDto): Promise<Order> {
+    const { itemQuantityList, address, couponId } = reqDto;
+    const shippingInfo = ShippingInfo.createShippingInfo(address);
+    const totalAmount = await this.calculateTotalAmout(itemQuantityList);
+
+    let coupon = null;
+    // 쿠폰 결제액 반영 기능 구현해야함
+    if (couponId) {
+      coupon = await this.couponRepository.findCouponById(couponId);
+    }
+
+    const order = new Order();
+    order.status = 'started';
+    order.shippingInfo = shippingInfo;
+    order.usedCoupon = coupon;
+    order.refundedInfo = new RefundedInfo();
+    order.createOrderNo();
+    order.amount = totalAmount;
+
+    return order;
+  }
 
   private async calculateTotalAmout(
     itemQuantityList: OrderItemReqDto[],

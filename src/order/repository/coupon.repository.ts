@@ -21,4 +21,8 @@ export class CouponRepository extends Repository<Coupon> {
   async createCoupon(coupon: Coupon) {
     await this.save(coupon);
   }
+
+  async findCouponById(id: string): Promise<Coupon> {
+    return await this.findOneBy({ id });
+  }
 }
