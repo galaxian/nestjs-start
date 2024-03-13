@@ -119,6 +119,13 @@ export class OrderService {
     if (!couponValidInfo.isValid()) {
       throw new BadRequestException('사용 불가한 쿠폰입니다.');
     }
+
+    if (couponTypeInfo.couponType === 'fixed') {
+      return (totalAmount * couponTypeInfo.value) / 100;
+    } else if (couponTypeInfo.couponType === 'flat') {
+      return couponTypeInfo.value;
+    }
+    return 0;
   }
 
   private async calculateTotalAmout(
