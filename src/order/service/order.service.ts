@@ -98,17 +98,25 @@ export class OrderService {
     couponId: string,
     usedPoint: number,
     userId: string,
-  ) {
+  ): Promise<number> {
     const couponDiscount = couponId
       ? await this.applyCoupon(totalAmount, couponId, userId)
       : 0;
+
+    const pointDiscount = usedPoint
+      ? await this.applyPoint(usedPoint, userId)
+      : 0;
+
+    const applyDiscountTotalAmount =
+      totalAmount - (couponDiscount + pointDiscount);
+    return applyDiscountTotalAmount;
   }
 
   private async applyCoupon(
     totalAmount: number,
     couponId: string,
     userId: string,
-  ) {
+  ): Promise<number> {
     const coupon = await this.couponRepository.findCouponByIdAndUserId(
       couponId,
       userId,
@@ -132,12 +140,14 @@ export class OrderService {
     return 0;
   }
 
-  private async applyPoint(usedPoint: number, userId: string) {
+  private async applyPoint(usedPoint: number, userId: string): Promise<number> {
     const userPoint = await this.pointRepository.findPointByUserId(userId);
 
     if (userPoint.isAvailable(usedPoint)) {
       throw new BadRequestException('포인트가 부족합니다.');
     }
+
+    return usedPoint;
   }
 
   private async calculateTotalAmout(
