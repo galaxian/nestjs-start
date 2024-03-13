@@ -1,12 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CreateCouponReqDto } from '../dto/create-coupon.req.dto';
 import { CouponService } from '../service/coupon.service';
 import { ResponseDto } from 'src/utils/dto/response.dto';
+import { JwtAuthGuard } from 'src/auth/security/auth.guard';
 
 @Controller('coupons')
 export class CouponController {
   constructor(private readonly couponService: CouponService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createCoupon(
     @Body() createCouponReqDto: CreateCouponReqDto,
