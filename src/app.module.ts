@@ -9,6 +9,7 @@ import { DataSource } from 'typeorm';
 import { validationSchema } from './config/validation.schema';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { OrderModule } from './order/order.module';
     AuthModule,
     ProductModule,
     OrderModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
