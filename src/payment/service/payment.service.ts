@@ -74,6 +74,8 @@ export class PaymentService {
     const tossApiAddress =
       'https://api.tosspayments.com/v1/payments/confirm' + paymentKey;
 
+    const secretEncode = await this.base64Encode();
+
     try {
       const result = await axios.post(tossApiAddress, paymentData, {
         headers: {
@@ -85,6 +87,11 @@ export class PaymentService {
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  private async base64Encode(): Promise<string> {
+    const secret = this.configService.get<string>('TOSS_SECRET_KEY');
+    return Buffer.from(secret + ':', 'utf-8').toString('base64');
   }
 
   private async verifyPayment(
