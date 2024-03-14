@@ -66,6 +66,19 @@ export class PaymentService {
     return result;
   }
 
+  @Transactional()
+  async tossPaymentFail(message: string, orderId: string): Promise<void> {
+    const payment = await this.paymentRepository.findPaymentByOrderId(orderId);
+    if (!payment) {
+      throw new BadRequestException('결제 정보를 찾을 수 없습니다.');
+    }
+
+    payment.failReason = message;
+    payment.paySuccess = false;
+
+    await this.paymentRepository.save(payment);
+  }
+
   private async requestPaymentAccept(
     paymentKey: string,
     orderId: string,
