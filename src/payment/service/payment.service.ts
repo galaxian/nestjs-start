@@ -9,6 +9,7 @@ import { Order } from 'src/order/entities/order.entity';
 import { Payment } from '../entities/payment.entity';
 import { CreatePaymentResDto } from '../dto/create-payment.res.dto';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class PaymentService {
@@ -57,6 +58,33 @@ export class PaymentService {
     paymentKey: string,
   ) {
     const payment = await this.verifyPayment(orderId, amount);
+    const result = await this.requestPaymentAccept(paymentKey, orderId, amount);
+  }
+
+  private async requestPaymentAccept(
+    paymentKey: string,
+    orderId: string,
+    amount: number,
+  ) {
+    const paymentData = {
+      paymentKey,
+      amount,
+      orderId,
+    };
+    const tossApiAddress =
+      'https://api.tosspayments.com/v1/payments/confirm' + paymentKey;
+
+    try {
+      const result = await axios.post(tossApiAddress, paymentData, {
+        headers: {
+          Authorization: secretEncode,
+          'Content-Type': 'application/json',
+        },
+      });
+      return result;
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 
   private async verifyPayment(
