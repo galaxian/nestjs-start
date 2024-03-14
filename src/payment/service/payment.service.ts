@@ -59,6 +59,11 @@ export class PaymentService {
   ) {
     const payment = await this.verifyPayment(orderId, amount);
     const result = await this.requestPaymentAccept(paymentKey, orderId, amount);
+    payment.paymentKey = paymentKey;
+    payment.paySuccess = true;
+
+    await this.paymentRepository.save(payment);
+    return result;
   }
 
   private async requestPaymentAccept(

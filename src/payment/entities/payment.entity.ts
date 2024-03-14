@@ -21,6 +21,9 @@ export class Payment extends BaseEntity {
   @Column({ type: 'varchar', length: 50 })
   orderId: string;
 
+  @Column({ type: 'tinyint', default: false })
+  paySuccess: boolean;
+
   @Column({ type: 'varchar', length: 50, nullable: true })
   paymentKey: string;
 
