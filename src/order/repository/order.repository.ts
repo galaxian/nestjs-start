@@ -21,4 +21,13 @@ export class OrderRepository extends Repository<Order> {
   async createOrder(order: Order): Promise<Order> {
     return await this.save(order);
   }
+
+  async findOrderByOrderNo(orderNo: string): Promise<Order> {
+    return await this.findOne({
+      where: {
+        orderNo,
+      },
+      relations: ['user'],
+    });
+  }
 }
