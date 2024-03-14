@@ -36,6 +36,18 @@ export class PaymentService {
     payment.user = certifiedUser;
 
     const savedPayment = await this.paymentRepository.createPayment(payment);
+
+    const response = new CreatePaymentResDto();
+    response.amount = savedPayment.amount;
+    response.customerEmail = savedPayment.user.email;
+    response.customerName = savedPayment.user.id;
+    response.orderId = savedPayment.orderId;
+    response.orderNo = savedPayment.orderNo;
+    response.payType = savedPayment.payType;
+    response.successUrl = this.configService.get<string>('TOSS_SUCCESS_URL');
+    response.failUrl = this.configService.get<string>('TOSS_fail_URL');
+
+    return response;
   }
 
   private async validate(order: Order, certifiedUser: User, amount: number) {
