@@ -44,8 +44,8 @@ export class PaymentService {
     response.orderId = savedPayment.orderId;
     response.orderNo = savedPayment.orderNo;
     response.payType = savedPayment.payType;
-    response.successUrl = this.configService.get<string>('TOSS_SUCCESS_URL');
-    response.failUrl = this.configService.get<string>('TOSS_fail_URL');
+    response.successUrl = this.configService.get<string>('SUCCESS_URL');
+    response.failUrl = this.configService.get<string>('FAIL_URL');
 
     return response;
   }
