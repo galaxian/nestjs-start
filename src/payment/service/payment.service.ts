@@ -6,6 +6,7 @@ import { User } from 'src/auth/entity/user.entity';
 import { UserRepository } from 'src/auth/repository/user.repository';
 import { OrderRepository } from 'src/order/repository/order.repository';
 import { Order } from 'src/order/entities/order.entity';
+import { Payment } from '../entities/payment.entity';
 import { CreatePaymentResDto } from '../dto/create-payment.res.dto';
 import { ConfigService } from '@nestjs/config';
 
@@ -26,6 +27,15 @@ export class PaymentService {
     const { payType, amount, orderNo } = reqDto;
     const order = await this.orderRepository.findOrderByOrderNo(orderNo);
     await this.validate(order, certifiedUser, amount);
+
+    const payment = new Payment();
+    payment.amount = amount;
+    payment.payType = payType;
+    payment.orderNo = orderNo;
+    payment.orderId = order.id;
+    payment.user = certifiedUser;
+
+    const savedPayment = await this.paymentRepository.createPayment(payment);
   }
 
   private async validate(order: Order, certifiedUser: User, amount: number) {
