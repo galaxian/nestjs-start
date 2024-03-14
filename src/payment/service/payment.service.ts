@@ -50,6 +50,31 @@ export class PaymentService {
     return response;
   }
 
+  @Transactional()
+  async tossPaymentSuccess(
+    amount: number,
+    orderId: string,
+    paymentKey: string,
+  ) {
+    const payment = await this.verifyPayment(orderId, amount);
+  }
+
+  private async verifyPayment(
+    orderId: string,
+    amount: number,
+  ): Promise<Payment> {
+    const payment = await this.paymentRepository.findPaymentByOrderId(orderId);
+    if (!payment) {
+      throw new BadRequestException('주문의 결제 정보가 없습니다.');
+    }
+    if (payment.amount !== amount) {
+      throw new BadRequestException(
+        '주문 총액과 결제 총액이 일치하지 않습니다.',
+      );
+    }
+    return payment;
+  }
+
   private async validate(order: Order, certifiedUser: User, amount: number) {
     if (amount < 1000) {
       throw new BadRequestException('결제 금액은 1000원 이상부터 가능합니다.');
