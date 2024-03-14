@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { PaymentService } from '../service/payment.service';
 import { JwtAuthGuard } from 'src/auth/security/auth.guard';
 import { CreatePaymentReqDto } from '../dto/create-payment.req.dto';
@@ -22,6 +30,21 @@ export class PaymentController {
       certifiedUser,
     );
     const result = new ResponseDto(201, null, data);
+    return result;
+  }
+
+  @Get('/payment/toss/success')
+  async tossPaymentSuccess(
+    @Param('amount') amount: number,
+    @Param('orderId') orderId: string,
+    @Param('paymentKey') paymentKey: string,
+  ) {
+    const data = await this.paymentService.tossPaymentSuccess(
+      amount,
+      orderId,
+      paymentKey,
+    );
+    const result = new ResponseDto(200, null, data);
     return result;
   }
 }

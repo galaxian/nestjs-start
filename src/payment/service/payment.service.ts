@@ -9,6 +9,7 @@ import { Order } from 'src/order/entities/order.entity';
 import { Payment } from '../entities/payment.entity';
 import { CreatePaymentResDto } from '../dto/create-payment.res.dto';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class PaymentService {
@@ -44,10 +45,74 @@ export class PaymentService {
     response.orderId = savedPayment.orderId;
     response.orderNo = savedPayment.orderNo;
     response.payType = savedPayment.payType;
-    response.successUrl = this.configService.get<string>('TOSS_SUCCESS_URL');
-    response.failUrl = this.configService.get<string>('TOSS_fail_URL');
+    response.successUrl = this.configService.get<string>('SUCCESS_URL');
+    response.failUrl = this.configService.get<string>('FAIL_URL');
 
     return response;
+  }
+
+  @Transactional()
+  async tossPaymentSuccess(
+    amount: number,
+    orderId: string,
+    paymentKey: string,
+  ) {
+    const payment = await this.verifyPayment(orderId, amount);
+    const result = await this.requestPaymentAccept(paymentKey, orderId, amount);
+    payment.paymentKey = paymentKey;
+    payment.paySuccess = true;
+
+    await this.paymentRepository.save(payment);
+    return result;
+  }
+
+  private async requestPaymentAccept(
+    paymentKey: string,
+    orderId: string,
+    amount: number,
+  ) {
+    const paymentData = {
+      paymentKey,
+      amount,
+      orderId,
+    };
+    const tossApiAddress =
+      'https://api.tosspayments.com/v1/payments/confirm' + paymentKey;
+
+    const secretEncode = await this.base64Encode();
+
+    try {
+      const result = await axios.post(tossApiAddress, paymentData, {
+        headers: {
+          Authorization: secretEncode,
+          'Content-Type': 'application/json',
+        },
+      });
+      return result;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  private async base64Encode(): Promise<string> {
+    const secret = this.configService.get<string>('TOSS_SECRET_KEY');
+    return Buffer.from(secret + ':', 'utf-8').toString('base64');
+  }
+
+  private async verifyPayment(
+    orderId: string,
+    amount: number,
+  ): Promise<Payment> {
+    const payment = await this.paymentRepository.findPaymentByOrderId(orderId);
+    if (!payment) {
+      throw new BadRequestException('주문의 결제 정보가 없습니다.');
+    }
+    if (payment.amount !== amount) {
+      throw new BadRequestException(
+        '주문 총액과 결제 총액이 일치하지 않습니다.',
+      );
+    }
+    return payment;
   }
 
   private async validate(order: Order, certifiedUser: User, amount: number) {

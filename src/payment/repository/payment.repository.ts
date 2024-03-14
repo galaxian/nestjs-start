@@ -21,4 +21,8 @@ export class PaymentRepository extends Repository<Payment> {
   async createPayment(payment: Payment): Promise<Payment> {
     return await this.save(payment);
   }
+
+  async findPaymentByOrderId(orderId: string): Promise<Payment> {
+    return await this.findOne({ where: { orderId } });
+  }
 }
