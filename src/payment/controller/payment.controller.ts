@@ -13,6 +13,7 @@ import { CreatePaymentReqDto } from '../dto/create-payment.req.dto';
 import { Request } from 'express';
 import { ResponseDto } from 'src/utils/dto/response.dto';
 import { CreatePaymentResDto } from '../dto/create-payment.res.dto';
+import { FailPaymentResDto } from '../dto/fail-payment.res.dto';
 
 @Controller()
 export class PaymentController {
@@ -45,6 +46,17 @@ export class PaymentController {
       paymentKey,
     );
     const result = new ResponseDto(200, null, data);
+    return result;
+  }
+
+  @Get('/payment/toss/fail')
+  async tossPaymentFail(
+    @Param('code') code: string,
+    @Param('message') message: string,
+    @Param('orderId') orderId: string,
+  ): Promise<ResponseDto<FailPaymentResDto>> {
+    this.paymentService.tossPaymentFail(message, orderId);
+    const result = new ResponseDto(200, null, { code, message, orderId });
     return result;
   }
 }
