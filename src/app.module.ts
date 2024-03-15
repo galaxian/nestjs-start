@@ -10,6 +10,8 @@ import { validationSchema } from './config/validation.schema';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { PaymentModule } from './payment/payment.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LogInterceptor } from './interceptor/logger.interceptor';
 
 @Module({
   imports: [
@@ -43,6 +45,9 @@ import { PaymentModule } from './payment/payment.module';
     PaymentModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_INTERCEPTOR, useClass: LogInterceptor },
+  ],
 })
 export class AppModule {}
